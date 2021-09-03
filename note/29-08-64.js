@@ -28,3 +28,5 @@ const person1 = {
 const person2 = {
   nickname,
 };
+
+/* ========================== */
