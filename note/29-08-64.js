@@ -30,3 +30,11 @@ const person2 = {
 };
 
 /* ========================== */
+
+// Null, Undefined
+
+const getUser = () => {};
+
+const user = getUser();
+
+user.address.province; // ERROR: cannot read property 'address' of undefined
