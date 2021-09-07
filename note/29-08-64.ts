@@ -90,3 +90,109 @@ function getName(person: unknown) {
 
 const shouldBeNull = null;
 const shouldBeUndefined = undefined;
+
+function getUsername(): string | undefined {
+  return "Hello";
+}
+
+const username = getUsername();
+// username?.charCodeAt();
+
+// Inline object typing
+
+//Inline Type Annotation - fixed keys
+const person1: {
+  name: string;
+  address: {
+    province: {
+      title: string;
+    };
+  }[];
+} = {
+  name: "Bob",
+  address: [
+    {
+      province: { title: "Bangkok" },
+    },
+  ],
+};
+
+//Index Types
+//Type key === string, value === number
+const person2: {
+  [key: string]: number;
+} = {
+  id: 1,
+};
+
+//Type-alias
+type Id = {
+  [key: string]: number | null;
+};
+
+const person3: Id = {
+  id: null,
+};
+
+type TPerson = {
+  firstname: string;
+  lastname: string;
+};
+
+const person4: TPerson = {
+  firstname: "a",
+  lastname: "b",
+};
+
+//interface & (inheritance - extends)
+interface IntPerson1 extends TelType {
+  tel: number;
+}
+
+interface TelType {
+  telType: string;
+}
+
+const personTel: IntPerson1 = {
+  tel: 1234,
+  telType: "home",
+};
+
+//interface & (inheritance - Intersect(&) with Type-alias)
+interface IntRole {
+  role: string;
+}
+
+type TRole = {
+  role: string;
+};
+
+type TPerson1 = {
+  name: string;
+} & { role: string };
+
+const person5: TPerson1 = {
+  name: "abc",
+  role: "admin",
+};
+
+//Generic Type : <>
+type A = Record<string, any>;
+
+function setPerson(person: {}) {}
+
+// useCase - type ใน Redux
+type ReduxActions = { type: "setUser" } | { type: "getUser" };
+
+// useCase - Type-alias define type-name
+type Name = string;
+const user: { name: Name } = {
+  name: "Mr",
+};
+
+// useCase - Union
+type TAngle = 0 | 90 | 180 | 270 | 360;
+
+function setAngles(angle: TAngle) {}
+
+setAngles(90);
