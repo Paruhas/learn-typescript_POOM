@@ -510,3 +510,94 @@ function ref<T>(type: T) {
 }
 
 const newRef = ref({ type: "number" as "number" });
+
+// ADV Type training
+// อยากทำให้ Input > Output
+
+type Input = {
+  title: {
+    type: "string";
+  };
+  age: {
+    type: "number";
+  };
+  memberIds: {
+    type: "array";
+    value: { type: "number" };
+  };
+};
+
+type Output = {
+  title: string;
+  age: number;
+  memberIds: [1, 2];
+};
+
+// เอาไว้แปลง string คำว่า "string" "number" เป็น Type จริงๆ
+type TypeMapper = {
+  string: string;
+  number: number;
+};
+
+type MappedOutput = {
+  [K in keyof Input]: Input[K] extends { type: keyof TypeMapper }
+    ? TypeMapper[Input[K]["type"]]
+    : never;
+};
+
+// type ToMappedOutput_ERR<T> = {
+//   [K in keyof T]: TypeMapper[T[K]["type"]];
+// };
+// ERROR complier [T[K]["type"] === ไม่แน่ใจ เพราะ T มันไม่แน่นอน ว่าเป็นค่าอะไร
+
+type ToMappedOutput<T> = {
+  [K in keyof T]: T[K] extends { type: keyof TypeMapper }
+    ? TypeMapper[T[K]["type"]]
+    : never;
+};
+
+type Result_Test = ToMappedOutput<Input>;
+
+// // แบบของ P'Sila ทำให้เมื่อ Input ไม่มีใน Type แล้วจะ never ได้
+// type ToMappedOutput_Sila<T> = T extends { [key: string]: { type: keyof TypeMapper } } // สามารถ Refactor === แยก type Refac =  keyof TypeMapper ออกไปได้
+//   ? {
+//       [K in keyof T]: TypeMapper[T[K]["type"]];
+//     }
+//   : never;
+
+type ToMappedOutput_extendsTop<
+  T extends { [P in keyof T]: { type: keyof TypeMapper } }
+> = { [K in keyof T]: TypeMapper[T[K]["type"]] };
+
+// type Result_Test_onTop = ToMappedOutput_extendsTop<Input>; // ERR เมื่อมีการเพิ่ม Type Array เข้ามา
+
+type ToMappedOutput_extendsInput = {
+  [K in keyof Input]: Input[K]["type"];
+};
+
+type Result_Test_exInput = ToMappedOutput_extendsInput;
+
+// // แบบยังไม่ Refactor ทำ Scalar แยก
+// type ToMappedOutput2<T> = {
+//   [K in keyof T]: T[K] extends { type: "array"; value: infer InsideArr }
+//     ? InsideArr extends { type: keyof TypeMapper }
+//       ? TypeMapper[InsideArr["type"]][]
+//       : never
+//     : T[K] extends { type: keyof TypeMapper }
+//     ? TypeMapper[T[K]["type"]]
+//     : never;
+// };
+
+type MapScalar<T> = T extends { type: keyof TypeMapper }
+  ? TypeMapper[T["type"]]
+  : never;
+
+type ToMappedOutput2<T> = {
+  [K in keyof T]: T[K] extends { type: "array"; value: infer InsideArr }
+    ? MapScalar<InsideArr>[]
+    : T[K] extends { type: keyof TypeMapper }
+    ? MapScalar<T[K]>
+    : never;
+};
+
+type Result_Test2 = ToMappedOutput2<Input>;
